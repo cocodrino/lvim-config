@@ -11,7 +11,8 @@ an executable
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save = true
-lvim.colorscheme = "material"
+--lvim.colorscheme = "oceanic_material"
+lvim.colorscheme = "oceanic_material"
 lvim.transparent_window = true
 vim.g.material_style = "deep ocean"
 
@@ -19,6 +20,7 @@ vim.g.material_style = "deep ocean"
 lvim.leader = "space"
 -- add your own keymapping
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
+lvim.keys.insert_mode["<C-s>"] = "<Esc> :w<cr>hi"
 -- unmap a default keymapping
 -- lvim.keys.normal_mode["<C-Up>"] = ""
 -- edit a default keymapping
@@ -143,25 +145,32 @@ vim.api.nvim_set_keymap('n', '<leader>mm', [[<Cmd>lua require('material.function
 -- Additional Plugins
 lvim.plugins = {
     {"folke/tokyonight.nvim"},
-    {"terryma/vim-expand-region"},
+    {"glepnir/oceanic-material"},
     {"AndrewRadev/tagalong.vim"},
     {"tpope/vim-surround"},
     {"Olical/conjure"},
+    {"vim-test/vim-test"},
+    {"jmcantrell/vim-virtualenv"},
+    -- {"beeender/Comrade"},
     {
       "p00f/nvim-ts-rainbow",
     },
 
-    {"wfxr/minimap.vim",
-      run = "cargo install --locked code-minimap",
-  -- cmd = {"Minimap", "MinimapClose", "MinimapToggle", "MinimapRefresh", "MinimapUpdateHighlight"},
-      config = function ()
-        vim.cmd ("let g:minimap_width = 10")
-        vim.cmd ("let g:minimap_auto_start = 1")
-        vim.cmd ("let g:minimap_auto_start_win_enter = 1")
-      end,
-  },
+  --   {"wfxr/minimap.vim",
+  --     run = "cargo install --locked code-minimap",
+  -- -- cmd = {"Minimap", "MinimapClose", "MinimapToggle", "MinimapRefresh", "MinimapUpdateHighlight"},
+  --     config = function ()
+  --       vim.cmd ("let g:minimap_width = 10")
+  --       vim.cmd ("let g:minimap_auto_start = 1")
+  --       vim.cmd ("let g:minimap_auto_start_win_enter = 1")
+  --     end,
+  -- },
+
     {"ggandor/lightspeed.nvim"},
     {"kana/vim-arpeggio"},
+    {"alvan/vim-closetag"},
+    {"terryma/vim-expand-region"},
+    {"mattn/emmet-vim"},
     {"guns/vim-sexp"},
     {"tpope/vim-sexp-mappings-for-regular-people"},
     {"marko-cerovac/material.nvim"},
@@ -173,12 +182,16 @@ lvim.plugins = {
 
     {
       "ray-x/lsp_signature.nvim",
-      event = "BufRead",
       config = function()
-        require "lsp_signature".setup()
+        require "lsp_signature".on_attach()
       end
     },
-
+    {
+      "kosayoda/nvim-lightbulb",
+      config = function()
+        vim.api.nvim_command("highlight LightBulbVirtualText guifg=red")
+      end
+    },
     {
       "simrat39/symbols-outline.nvim",
       cmd = "SymbolsOutline",
@@ -201,15 +214,15 @@ lvim.plugins = {
 vim.cmd[[
 call arpeggio#map('i', '', 0, 'jk', '<Esc>')
 call arpeggio#map('i','',0,'kl', '<Esc>v')
-call arpeggio#map('n','',0,'jk','a')
-call arpeggio#map('n','',0,'kl','v')
 call arpeggio#map('v','',0,'jk','<Esc>')
 
 ]]
 
- lvim.lang.python.linters = {
-   {exe = "flake8"}
- }
+-- call arpeggio#map('n','',0,'jk','a')
+-- call arpeggio#map('n','',0,'kl','v')
+ -- lvim.lang.python.linters = {
+ --   {exe = "flake8"}
+ -- }
 
  lvim.lang.python.formatters = {
   {
@@ -229,3 +242,58 @@ vim.cmd[[
 lvim.lsp.diagnostics.virtual_text = false
 
 require("lsp-config.tailwindcss")
+
+vim.cmd[[
+nmap <silent> t<C-n> :TestNearest --verbose<CR>
+nmap <silent> t<C-f> :TestFile --format documentation<CR>
+nmap <silent> t<C-s> :TestSuite --fail-fast<CR>
+nmap <silent> t<C-l> :TestLast --backtrace<CR>
+nmap <silent> t<C-g> :TestVisit<CR>
+]]
+
+lvim.builtin.terminal.direction = "horizontal"
+
+vim.g.material_style = 'darker'
+
+vim.g.closetag_filenames = "*.html"
+vim.g.closetag_xhtml_filenames = "*.jsx,*.svelte"
+vim.g.closetag_shortcut = '>'
+
+vim.cmd[[
+let g:user_emmet_leader_key='>'
+let g:user_emmet_settings = {
+  \  'javascript.jsx' : {
+    \      'extends' : 'jsx',
+    \  },
+  \}
+]]
+
+vim.cmd[[
+  let g:expand_region_text_objects = {
+        \ 'iw'  :0,
+        \ 'iW'  :0,
+        \ 'i"'  :0,
+        \ 'i''' :0,
+        \ 'i]'  :1,
+        \ 'ib'  :1,
+        \ 'iB'  :1,
+        \ 'il'  :1,
+        \ 'ip'  :1,
+        \ 'ie'  :0,
+        \ }
+
+  vmap v <Plug>(expand_region_expand)
+  vmap <C-v> <Plug>(expand_region_shrink)
+]]
+
+vim.cmd[[
+set background=dark
+colorscheme oceanic_material
+]]
+
+vim.g.oceanic_material_transparent_background = true
+vim.g.oceanic_material_allow_bold = true
+vim.g.oceanic_material_allow_underline = true
+vim.g.oceanic_material_allow_undercurl= true
+
+
