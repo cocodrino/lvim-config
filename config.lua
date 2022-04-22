@@ -11,18 +11,14 @@ an executable
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save = true
---lvim.colorscheme = "oceanic_material"
-lvim.colorscheme = "oceanic_material"
-lvim.transparent_window = true
-vim.g.material_style = "deep ocean"
+lvim.colorscheme = "onedarker"
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
 -- add your own keymapping
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
-lvim.keys.insert_mode["<C-s>"] = "<Esc> :w<cr>hi"
 -- unmap a default keymapping
--- lvim.keys.normal_mode["<C-Up>"] = ""
+-- lvim.keys.normal_mode["<C-Up>"] = false
 -- edit a default keymapping
 -- lvim.keys.normal_mode["<C-q>"] = ":q<cr>"
 
@@ -46,19 +42,21 @@ lvim.keys.insert_mode["<C-s>"] = "<Esc> :w<cr>hi"
 
 -- Use which-key to add extra bindings with the leader-key prefix
 -- lvim.builtin.which_key.mappings["P"] = { "<cmd>Telescope projects<CR>", "Projects" }
-lvim.builtin.which_key.mappings["t"] = {
-  name = "+Trouble",
-  r = { "<cmd>Trouble lsp_references<cr>", "References" },
-  f = { "<cmd>Trouble lsp_definitions<cr>", "Definitions" },
-  d = { "<cmd>Trouble lsp_document_diagnostics<cr>", "Diagnostics" },
-  q = { "<cmd>Trouble quickfix<cr>", "QuickFix" },
-  l = { "<cmd>Trouble loclist<cr>", "LocationList" },
-  w = { "<cmd>Trouble lsp_workspace_diagnostics<cr>", "Diagnostics" },
-}
+-- lvim.builtin.which_key.mappings["t"] = {
+--   name = "+Trouble",
+--   r = { "<cmd>Trouble lsp_references<cr>", "References" },
+--   f = { "<cmd>Trouble lsp_definitions<cr>", "Definitions" },
+--   d = { "<cmd>Trouble document_diagnostics<cr>", "Diagnostics" },
+--   q = { "<cmd>Trouble quickfix<cr>", "QuickFix" },
+--   l = { "<cmd>Trouble loclist<cr>", "LocationList" },
+--   w = { "<cmd>Trouble workspace_diagnostics<cr>", "Wordspace Diagnostics" },
+-- }
 
 -- TODO: User Config for predefined plugins
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
-lvim.builtin.dashboard.active = true
+lvim.builtin.alpha.active = true
+lvim.builtin.alpha.mode = "dashboard"
+lvim.builtin.notify.active = true
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.show_icons.git = 0
@@ -72,6 +70,7 @@ lvim.builtin.treesitter.ensure_installed = {
   "lua",
   "python",
   "typescript",
+  "tsx",
   "css",
   "rust",
   "java",
@@ -81,13 +80,12 @@ lvim.builtin.treesitter.ensure_installed = {
 lvim.builtin.treesitter.ignore_install = { "haskell" }
 lvim.builtin.treesitter.highlight.enabled = true
 
-vim.api.nvim_set_keymap('n', '<leader>mm', [[<Cmd>lua require('material.functions').toggle_style()<CR>]], { noremap = true, silent = true })
 -- generic LSP settings
 
 -- ---@usage disable automatic installation of servers
 -- lvim.lsp.automatic_servers_installation = false
 
--- ---@usage Select which servers should be configured manually. Requires `:LvimCacheRest` to take effect.
+-- ---@usage Select which servers should be configured manually. Requires `:LvimCacheReset` to take effect.
 -- See the full default list `:lua print(vim.inspect(lvim.lsp.override))`
 -- vim.list_extend(lvim.lsp.override, { "pyright" })
 
@@ -95,8 +93,8 @@ vim.api.nvim_set_keymap('n', '<leader>mm', [[<Cmd>lua require('material.function
 -- local opts = {} -- check the lspconfig documentation for a list of all possible options
 -- require("lvim.lsp.manager").setup("pylsp", opts)
 
--- you can set a custom on_attach function that will be used for all the language servers
--- See <https://github.com/neovim/nvim-lspconfig#keybindings-and-completion>
+-- -- you can set a custom on_attach function that will be used for all the language servers
+-- -- See <https://github.com/neovim/nvim-lspconfig#keybindings-and-completion>
 -- lvim.lsp.on_attach_callback = function(client, bufnr)
 --   local function buf_set_option(...)
 --     vim.api.nvim_buf_set_option(bufnr, ...)
@@ -104,28 +102,18 @@ vim.api.nvim_set_keymap('n', '<leader>mm', [[<Cmd>lua require('material.function
 --   --Enable completion triggered by <c-x><c-o>
 --   buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
 -- end
--- you can overwrite the null_ls setup table (useful for setting the root_dir function)
--- lvim.lsp.null_ls.setup = {
---   root_dir = require("lspconfig").util.root_pattern("Makefile", ".git", "node_modules"),
--- }
--- or if you need something more advanced
--- lvim.lsp.null_ls.setup.root_dir = function(fname)
---   if vim.bo.filetype == "javascript" then
---     return require("lspconfig/util").root_pattern("Makefile", ".git", "node_modules")(fname)
---       or require("lspconfig/util").path.dirname(fname)
---   elseif vim.bo.filetype == "php" then
---     return require("lspconfig/util").root_pattern("Makefile", ".git", "composer.json")(fname) or vim.fn.getcwd()
---   else
---     return require("lspconfig/util").root_pattern("Makefile", ".git")(fname) or require("lspconfig/util").path.dirname(fname)
---   end
--- end
 
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 -- local formatters = require "lvim.lsp.null-ls.formatters"
 -- formatters.setup {
---   { exe = "black" },
+--   { command = "black", filetypes = { "python" } },
+--   { command = "isort", filetypes = { "python" } },
 --   {
---     exe = "prettier",
+--     -- each formatter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
+--     command = "prettier",
+--     ---@usage arguments to pass to the formatter
+--     -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
+--     extra_args = { "--print-with", "100" },
 --     ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
 --     filetypes = { "typescript", "typescriptreact" },
 --   },
@@ -134,18 +122,25 @@ vim.api.nvim_set_keymap('n', '<leader>mm', [[<Cmd>lua require('material.function
 -- -- set additional linters
 -- local linters = require "lvim.lsp.null-ls.linters"
 -- linters.setup {
---   { exe = "black" },
+--   { command = "flake8", filetypes = { "python" } },
 --   {
---     exe = "eslint_d",
+--     -- each linter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
+--     command = "shellcheck",
+--     ---@usage arguments to pass to the formatter
+--     -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
+--     extra_args = { "--severity", "warning" },
+--   },
+--   {
+--     command = "codespell",
 --     ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
---     filetypes = { "javascript", "javascriptreact" },
+--     filetypes = { "javascript", "python" },
 --   },
 -- }
 
 -- Additional Plugins
 lvim.plugins = {
     {"folke/tokyonight.nvim"},
-    {"glepnir/oceanic-material"},
+{"glepnir/oceanic-material"},
     {"AndrewRadev/tagalong.vim"},
     {"tpope/vim-surround"},
     {"Olical/conjure"},
@@ -167,6 +162,15 @@ lvim.plugins = {
   -- },
 
     {"ggandor/lightspeed.nvim"},
+
+    
+    {'phaazon/hop.nvim',
+     config = function()
+        require'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
+     end
+    },
+  
+
     {"kana/vim-arpeggio"},
     {"alvan/vim-closetag"},
     {"terryma/vim-expand-region"},
@@ -197,6 +201,66 @@ lvim.plugins = {
       cmd = "SymbolsOutline",
     },
 
+
+    {
+      "rmagatti/goto-preview",
+      config = function()
+      require('goto-preview').setup {
+            width = 120; -- Width of the floating window
+            height = 25; -- Height of the floating window
+            default_mappings = false; -- Bind default mappings
+            debug = false; -- Print debug information
+            opacity = nil; -- 0-100 opacity level of the floating window where 100 is fully transparent.
+            post_open_hook = nil -- A function taking two arguments, a buffer and a window to be ran as a hook.
+            -- You can use "default_mappings = true" setup option
+            -- Or explicitly set keybindings
+            -- vim.cmd("nnoremap gpd <cmd>lua require('goto-preview').goto_preview_definition()<CR>")
+            -- vim.cmd("nnoremap gpi <cmd>lua require('goto-preview').goto_preview_implementation()<CR>")
+            -- vim.cmd("nnoremap gP <cmd>lua require('goto-preview').close_all_win()<CR>")
+        }
+      end
+    },
+
+
+    {
+        "ethanholz/nvim-lastplace",
+        event = "BufRead",
+        config = function()
+          require("nvim-lastplace").setup({
+            lastplace_ignore_buftype = { "quickfix", "nofile", "help" },
+            lastplace_ignore_filetype = {
+              "gitcommit", "gitrebase", "svn", "hgcommit",
+            },
+            lastplace_open_folds = true,
+          })
+        end,
+      },
+
+    {
+
+      "xiyaowong/nvim-transparent",
+      config = function()
+          require("transparent").setup({
+            enable = true, -- boolean: enable transparent
+            extra_groups = { -- table/string: additional groups that should be cleared
+              -- In particular, when you set it to 'all', that means all available groups
+
+              -- example of akinsho/nvim-bufferline.lua
+              "BufferLineTabClose",
+              "BufferlineBufferSelected",
+              "BufferLineFill",
+              "BufferLineBackground",
+              "BufferLineSeparator",
+              "BufferLineIndicatorSelected",
+            },
+            exclude = {}, -- table: groups you don't want to clear
+          })
+
+      end
+    },
+
+
+
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
@@ -215,7 +279,6 @@ vim.cmd[[
 call arpeggio#map('i', '', 0, 'jk', '<Esc>')
 call arpeggio#map('i','',0,'kl', '<Esc>v')
 call arpeggio#map('v','',0,'jk','<Esc>')
-
 ]]
 
 -- call arpeggio#map('n','',0,'jk','a')
@@ -224,11 +287,6 @@ call arpeggio#map('v','',0,'jk','<Esc>')
  --   {exe = "flake8"}
  -- }
 
- lvim.lang.python.formatters = {
-  {
-    exe = "black"
-  }
-}
 
 vim.cmd[[
   let @q='ctrl + r ctrl + r q'
@@ -241,7 +299,7 @@ vim.cmd[[
 
 lvim.lsp.diagnostics.virtual_text = false
 
-require("lsp-config.tailwindcss")
+-- require("lsp-config.tailwindcss")
 
 vim.cmd[[
 nmap <silent> t<C-n> :TestNearest --verbose<CR>
@@ -281,7 +339,6 @@ vim.cmd[[
         \ 'ip'  :1,
         \ 'ie'  :0,
         \ }
-
   vmap v <Plug>(expand_region_expand)
   vmap <C-v> <Plug>(expand_region_shrink)
 ]]
@@ -296,4 +353,42 @@ vim.g.oceanic_material_allow_bold = true
 vim.g.oceanic_material_allow_underline = true
 vim.g.oceanic_material_allow_undercurl= true
 
+--:hi normal guibg=00000
 
+
+
+vim.api.nvim_set_keymap('n', 'f', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true })<cr>", {})
+vim.api.nvim_set_keymap('n', 'F', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>", {})
+vim.api.nvim_set_keymap('o', 'f', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true, inclusive_jump = true })<cr>", {})
+vim.api.nvim_set_keymap('o', 'F', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true, inclusive_jump = true })<cr>", {})
+vim.api.nvim_set_keymap('', 't', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true })<cr>", {})
+vim.api.nvim_set_keymap('', 'T', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>", {})
+
+
+-- normal mode (easymotion-like)
+vim.api.nvim_set_keymap("n", "<Leader><Leader>b", "<cmd>HopWordBC<CR>", {noremap=true})
+vim.api.nvim_set_keymap("n", "<Leader><Leader>w", "<cmd>HopWordAC<CR>", {noremap=true})
+vim.api.nvim_set_keymap("n", "<Leader><Leader>j", "<cmd>HopLineAC<CR>", {noremap=true})
+vim.api.nvim_set_keymap("n", "<Leader><Leader>k", "<cmd>HopLineBC<CR>", {noremap=true})
+
+-- visual mode (easymotion-like)
+vim.api.nvim_set_keymap("v", "<Leader><Leader>w", "<cmd>HopWordAC<CR>", {noremap=true})
+vim.api.nvim_set_keymap("v", "<Leader><Leader>b", "<cmd>HopWordBC<CR>", {noremap=true})
+vim.api.nvim_set_keymap("v", "<Leader><Leader>j", "<cmd>HopLineAC<CR>", {noremap=true})
+vim.api.nvim_set_keymap("v", "<Leader><Leader>k", "<cmd>HopLineBC<CR>", {noremap=true})
+
+
+-- normal mode (sneak-like)
+vim.api.nvim_set_keymap("n", "s", "<cmd>HopChar2AC<CR>", {noremap=false})
+vim.api.nvim_set_keymap("n", "S", "<cmd>HopChar2BC<CR>", {noremap=false})
+
+-- visual mode (sneak-like)
+vim.api.nvim_set_keymap("v", "s", "<cmd>HopChar2AC<CR>", {noremap=false})
+vim.api.nvim_set_keymap("v", "S", "<cmd>HopChar2BC<CR>", {noremap=false})
+
+vim.api.nvim_set_option("clipboard","unnamed")
+
+vim.cmd[[
+  noremap <C-c> "+y
+  noremap <C-v> "+p
+]]
